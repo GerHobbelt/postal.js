@@ -64,13 +64,28 @@ var localBus = {
 	},
 
 	subscribe : function ( subDef ) {
-		var idx, found, fn, channel = this.subscriptions[subDef.channel], subs;
+		var idx, found, fn, channel = this.subscriptions[subDef.channel], subs, len, idx;
 		if ( !channel ) {
 			channel = this.subscriptions[subDef.channel] = {};
 		}
 		subs = this.subscriptions[subDef.channel][subDef.topic];
 		if ( !subs ) {
 			subs = this.subscriptions[subDef.channel][subDef.topic] = [];
+		}
+		// make sure each subscription Definition is available in each channel/topic only once:
+		// this allows users to invoke .subscribe() with the same definition instance multiple
+		// times in order to adjust execution order.
+		for (idx = 0, len = subs.length; idx < len; ++idx) {
+			if (subs[idx] === subDef) {
+				// do NOT change the execution order while we are in the middle of a .publish() action!
+				if (pubInProgress) {
+					subQueue.push(subDef);
+					return subDef;
+				} else {
+					subs.splice(idx, 1);
+					break;
+				}
+			}
 		}
 		subs.push( subDef );
 		return subDef;
