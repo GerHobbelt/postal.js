@@ -1,6 +1,6 @@
 # Postal.js
 
-## Version 0.8.4	 (Dual Licensed [MIT](http://www.opensource.org/licenses/mit-license) & [GPL](http://www.opensource.org/licenses/gpl-license))
+## Version 0.8.4     (Dual Licensed [MIT](http://www.opensource.org/licenses/mit-license) & [GPL](http://www.opensource.org/licenses/gpl-license))
 
 ## What is it?
 Postal.js is an in-memory message bus - very loosely inspired by [AMQP](http://www.amqp.org/) - written in JavaScript.  Postal.js runs in the browser, or on the server-side using Node.js. It takes the familiar "eventing-style" paradigm (of which most JavaScript developers are familiar) and extends it by providing "broker" and subscriber implementations which are more sophisticated than what you typically find in simple event delegation.
@@ -39,7 +39,7 @@ var channel = postal.channel();
 
 // subscribe to 'name.change' topics
 var subscription = channel.subscribe( "name.change", function ( data ) {
-	$( "#example1" ).html( "Name: " + data.name );
+    $( "#example1" ).html( "Name: " + data.name );
 } );
 
 // And someone publishes a name change:
@@ -51,19 +51,19 @@ subscription.unsubscribe();
 // postal also provides a top-level ability to subscribe/publish
 // used primarily when you don't need to hang onto a channel instance:
 var anotherSub = postal.subscribe({
-	channel  : "MyChannel",
-	topic    : "name.change",
-	callback : function(data, envelope) {
-		$( "#example1" ).html( "Name: " + data.name );    
-	}
+    channel  : "MyChannel",
+    topic    : "name.change",
+    callback : function(data, envelope) {
+        $( "#example1" ).html( "Name: " + data.name );
+    }
 });
 
 postal.publish({
-	channel : "MyChannel",
-	topic   : "name.change",
-	data    : {
-	    name : "Dr. Who"
-	}
+    channel : "MyChannel",
+    topic   : "name.change",
+    data    : {
+        name : "Dr. Who"
+    }
 });
 ```
 
@@ -73,7 +73,7 @@ The `*` symbol represents "one word" in a topic (i.e - the text between two peri
 
 ```javascript
 var chgSubscription = channel.subscribe( "*.changed", function ( data ) {
-	$( "<li>" + data.type + " changed: " + data.value + "</li>" ).appendTo( "#example2" );
+    $( "<li>" + data.type + " changed: " + data.value + "</li>" ).appendTo( "#example2" );
 } );
 channel.publish( "name.changed",     { type : "Name",     value : "John Smith" } );
 channel.publish( "location.changed", { type : "Location", value : "Early 20th Century England" } );
@@ -86,7 +86,7 @@ The `#` symbol represents 0-n number of characters/words in a topic string. By s
 
 ```javascript
 var starSubscription = channel.subscribe( "DrWho.#.Changed", function ( data ) {
-	$( "<li>" + data.type + " Changed: " + data.value + "</li>" ).appendTo( "#example3" );
+    $( "<li>" + data.type + " Changed: " + data.value + "</li>" ).appendTo( "#example3" );
 } );
 channel.publish( "DrWho.NinthDoctor.Companion.Changed", { type : "Companion Name", value : "Rose"   } );
 channel.publish( "DrWho.TenthDoctor.Companion.Changed", { type : "Companion Name", value : "Martha" } );

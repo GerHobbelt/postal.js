@@ -13,106 +13,106 @@ var fireSub = function(subDef, envelope) {
 var pubInProgress = 0;
 var unSubQueue = [];
 var clearUnSubQueue = function() {
-	while(unSubQueue.length) {
-		unSubQueue.shift().unsubscribe();
-	}
+    while(unSubQueue.length) {
+        unSubQueue.shift().unsubscribe();
+    }
 };
 
 var localBus = {
-	addWireTap : function ( callback ) {
-		var self = this;
-		self.wireTaps.push( callback );
-		return function () {
-			var idx = self.wireTaps.indexOf( callback );
-			if ( idx !== -1 ) {
-				self.wireTaps.splice( idx, 1 );
-			}
-		};
-	},
+    addWireTap : function ( callback ) {
+        var self = this;
+        self.wireTaps.push( callback );
+        return function () {
+            var idx = self.wireTaps.indexOf( callback );
+            if ( idx !== -1 ) {
+                self.wireTaps.splice( idx, 1 );
+            }
+        };
+    },
 
-	publish : function ( envelope ) {
-		++pubInProgress;
-		envelope.timeStamp = new Date();
-		_.each( this.wireTaps, function ( tap ) {
-			tap( envelope.data, envelope );
-		} );
-		if ( this.subscriptions[envelope.channel] ) {
-			_.each( this.subscriptions[envelope.channel], function ( subscribers ) {
-				var idx = 0, len = subscribers.length, subDef;
-				while ( idx < len ) {
-					if ( subDef = subscribers[idx++] ) {
-						fireSub( subDef, envelope );
-					}
-				}
-			} );
-		}
-		if (--pubInProgress == 0) {
-			clearUnSubQueue();
-		}
-		return envelope;
-	},
+    publish : function ( envelope ) {
+        ++pubInProgress;
+        envelope.timeStamp = new Date();
+        _.each( this.wireTaps, function ( tap ) {
+            tap( envelope.data, envelope );
+        } );
+        if ( this.subscriptions[envelope.channel] ) {
+            _.each( this.subscriptions[envelope.channel], function ( subscribers ) {
+                var idx = 0, len = subscribers.length, subDef;
+                while ( idx < len ) {
+                    if ( subDef = subscribers[idx++] ) {
+                        fireSub( subDef, envelope );
+                    }
+                }
+            } );
+        }
+        if (--pubInProgress == 0) {
+            clearUnSubQueue();
+        }
+        return envelope;
+    },
 
-	reset : function () {
-		if ( this.subscriptions ) {
-			_.each( this.subscriptions, function ( channel ) {
-				_.each( channel, function ( topic ) {
-					while ( topic.length ) {
-						topic.pop().unsubscribe();
-					}
-				} );
-			} );
-			this.subscriptions = {};
-		}
-	},
+    reset : function () {
+        if ( this.subscriptions ) {
+            _.each( this.subscriptions, function ( channel ) {
+                _.each( channel, function ( topic ) {
+                    while ( topic.length ) {
+                        topic.pop().unsubscribe();
+                    }
+                } );
+            } );
+            this.subscriptions = {};
+        }
+    },
 
-	subscribe : function ( subDef ) {
-		var idx, found, fn, channel = this.subscriptions[subDef.channel], subs, len, idx;
-		if ( !channel ) {
-			channel = this.subscriptions[subDef.channel] = {};
-		}
-		subs = this.subscriptions[subDef.channel][subDef.topic];
-		if ( !subs ) {
-			subs = this.subscriptions[subDef.channel][subDef.topic] = [];
-		}
-		// make sure each subscription Definition is available in each channel/topic only once:
-		// this allows users to invoke .subscribe() with the same definition instance multiple
-		// times in order to adjust execution order.
-		for (idx = 0, len = subs.length; idx < len; ++idx) {
-			if (subs[idx] === subDef) {
-				// do NOT change the execution order while we are in the middle of a .publish() action!
-				if (pubInProgress) {
-					subQueue.push(subDef);
-					return subDef;
-				} else {
-					subs.splice(idx, 1);
-					break;
-				}
-			}
-		}
-		subs.push( subDef );
-		return subDef;
-	},
+    subscribe : function ( subDef ) {
+        var idx, found, fn, channel = this.subscriptions[subDef.channel], subs, len, idx;
+        if ( !channel ) {
+            channel = this.subscriptions[subDef.channel] = {};
+        }
+        subs = this.subscriptions[subDef.channel][subDef.topic];
+        if ( !subs ) {
+            subs = this.subscriptions[subDef.channel][subDef.topic] = [];
+        }
+        // make sure each subscription Definition is available in each channel/topic only once:
+        // this allows users to invoke .subscribe() with the same definition instance multiple
+        // times in order to adjust execution order.
+        for (idx = 0, len = subs.length; idx < len; ++idx) {
+            if (subs[idx] === subDef) {
+                // do NOT change the execution order while we are in the middle of a .publish() action!
+                if (pubInProgress) {
+                    subQueue.push(subDef);
+                    return subDef;
+                } else {
+                    subs.splice(idx, 1);
+                    break;
+                }
+            }
+        }
+        subs.push( subDef );
+        return subDef;
+    },
 
-	subscriptions : {},
+    subscriptions : {},
 
-	wireTaps : [],
+    wireTaps : [],
 
-	unsubscribe : function ( config ) {
-		if (pubInProgress) {
-			unSubQueue.push(config);
-			return;
-		}
-		if ( this.subscriptions[config.channel][config.topic] ) {
-			var len = this.subscriptions[config.channel][config.topic].length,
-				idx = 0;
-			while(idx < len) {
-				if ( this.subscriptions[config.channel][config.topic][idx] === config ) {
-					this.subscriptions[config.channel][config.topic].splice( idx, 1 );
-					break;
-				}
-				idx += 1;
-			}
-		}
-	}
+    unsubscribe : function ( config ) {
+        if (pubInProgress) {
+            unSubQueue.push(config);
+            return;
+        }
+        if ( this.subscriptions[config.channel][config.topic] ) {
+            var len = this.subscriptions[config.channel][config.topic].length,
+                idx = 0;
+            while(idx < len) {
+                if ( this.subscriptions[config.channel][config.topic][idx] === config ) {
+                    this.subscriptions[config.channel][config.topic].splice( idx, 1 );
+                    break;
+                }
+                idx += 1;
+            }
+        }
+    }
 };
 localBus.subscriptions[SYSTEM_CHANNEL] = {};
