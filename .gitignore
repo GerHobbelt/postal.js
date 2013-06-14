@@ -13,3 +13,7 @@ desktop.ini
 .anvil
 *node_modules
 *npm-debug*
+
+# editor backup files
+*.bak
+*~
