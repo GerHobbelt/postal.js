@@ -3,9 +3,11 @@
 ## Version 0.8.4     (Dual Licensed [MIT](http://www.opensource.org/licenses/mit-license) & [GPL](http://www.opensource.org/licenses/gpl-license))
 
 ## What is it?
+
 Postal.js is an in-memory message bus - very loosely inspired by [AMQP](http://www.amqp.org/) - written in JavaScript.  Postal.js runs in the browser, or on the server-side using Node.js. It takes the familiar "eventing-style" paradigm (of which most JavaScript developers are familiar) and extends it by providing "broker" and subscriber implementations which are more sophisticated than what you typically find in simple event delegation.
 
 ## Why would I use it?
+
 Using a local message bus can enable to you de-couple your web application's components in a way not possible with other 'eventing' approaches.  In addition, strategically adopting messaging at the 'seams' of your application (e.g. - between modules, at entry/exit points for browser data and storage) can not only help enforce better overall architectural design, but also insulate you from the risks of tightly coupling your application to 3rd party libraries.  For example:
 
 * If you're using a client-side binding framework, and either don't have - or don't like - the request/communication abstractions provided, then grab a library like [amplify.js](http://amplifyjs.com) or [reqwest](https://github.com/ded/reqwest).  Then, instead of tightly coupling them to your application, have the request success/error callbacks publish messages with the appropriate data and any subscribers you've wired up can handle applying the data to the specific objects/elements they're concerned with.
@@ -14,6 +16,7 @@ Using a local message bus can enable to you de-couple your web application's com
 * postal.js is extensible.  Plugins like [postal.when](https://github.com/postaljs/postal.when) can be included to provide even more targeted functionality to subscribers. [Postal.federation](https://github.com/postaljs/postal.federation) provides the core bits needed to federate postal instances running in different environments (currently the only federation plugin available is [postal.xframe](https://github.com/postaljs/postal.xframe) for federating between windows in the browser, but more plugins are in the works). These - and more - are all things Postal can do for you.
 
 ## Philosophy
+
 Postal.js is in good company - there are many options for &lt;airquotes&gt;pub/sub&lt;/airquotes&gt; in the browser.  However, I grew frustrated with most of them because they often closely followed an event-delegation-paradigm, instead of providing a structured in-memory message bus.  Central to postal.js are four concepts:
 
 * channels should be provided to allow for logical partitioning of "topics"
@@ -22,9 +25,11 @@ Postal.js is in good company - there are many options for &lt;airquotes&gt;pub/s
 * subscriber callbacks should get a consistent method signature
 
 ### Channels? WAT?
+
 A channel is a logical partition of topics.  Conceptually, it's like a dedicated highway for a specific set of communication.  At first glance it might seem like that's overkill for an environment that runs in an event loop, but it actually proves to be quite useful.  Every library has architectural opinions that it either imposes or nudges you toward.  Channel-oriented messaging nudges you to separate your communication by bounded context, and enables the kind of fine-tuned visibility you need into the interactions between components as your application grows.
 
 ### Hierarchical Topics
+
 In my experience, seeing publish and subscribe calls all over application logic is usually a strong code smell.  Ideally, the majority of message-bus integration should be concealed within application infrastructure.  Having a hierarchical-wildcard-bindable topic system makes it very easy to keep things concise (especially subscribe calls!).  For example, if you have a module that needs to listen to every message published on the ShoppingCart channel, you'd simply subscribe to "\#", and never have to worry about additional subscribes on that channel again - even if you add new messages in the future.  If you need to capture all messages with ".validation" at the end of the topic, you'd simply subscribe to "\#.validation".  If you needed to target all messages with topics that started with "Customer.", ended with ".validation" and had only one period-delimited segment in between, you'd subscribe to "Customer.*.validation" (thus your subscription would capture Customer.address.validation and Customer.email.validation").
 
 ## How do I use it?
@@ -118,9 +123,11 @@ dupSubscription.unsubscribe();
 ```
 
 ## More References
+
 Please visit the [postal.js wiki](https://github.com/postaljs/postal.js/wiki) for API documentation, discussion of concepts and links to blogs/articles on postal.js.
 
 ## How can I extend it?
+
 There are four main ways you can extend Postal:
 
 * Write a plugin.  Need more complex behavior that the built-in SubscriptionDefinition doesn't offer?  Write a plugin that you can attach to the global postal object.  See [postal.when](https://github.com/postaljs/postal.when) for an example of how to do this.
@@ -131,9 +138,11 @@ There are four main ways you can extend Postal:
 It's also possible to extend the monitoring of messages passing through Postal by adding a "wire tap".  A wire tap is a callback that will get invoked for any published message (even if no actual subscriptions would bind to the message's topic).  Wire taps should _not_ be used in lieu of an actual subscription - but instead should be used for diagnostics, logging, forwarding (to a websocket publisher or a local storage wrapper, for example) or other concerns that fall along those lines.  This repository used to include a console logging wiretap called postal.diagnostics.js - you can now find it [here in it's own repo](https://github.com/postaljs/postal.diagnostics).  This diagnostics wiretap can be configured with filters to limit the firehose of message data to specific channels/topics and more.
 
 ## Can I contribute?
+
 Please - by all means!  While I hope the API is relatively stable, I'm open to pull requests.  (Hint - if you want a feature implemented, a pull request gives it a much higher probability of being included than simply asking me.)  As I said, pull requests are most certainly welcome - but please include tests for your additions.  Otherwise, it will disappear into the ether.
 
 ## Roadmap for the Future
+
 Here's where Postal is headed:
 
 * Add-ons to enable message capture and replay are in the works and should be ready soon.
