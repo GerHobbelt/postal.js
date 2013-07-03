@@ -10,19 +10,19 @@ ANVIL=node_modules/.bin/anvil
 all: lib/postal.js lib/postal.min.js
 
 
-lib/postal.js lib/postal.min.js:							\
-		build.json											\
-		header.js											\
-		src/AmqpBindingsResolver.js							\
-		src/Api.js											\
-		src/ChannelDefinition.js							\
-		src/ConsecutiveDistinctPredicate.js					\
-		src/Constants.js									\
-		src/DistinctPredicate.js							\
-		src/LocalBus.js										\
-		src/postal.js										\
-		src/SubscriptionDefinition.js
-	$(ANVIL)
+lib/postal.js lib/postal.min.js:                            \
+        build.json                                          \
+        header.js                                           \
+        src/AmqpBindingsResolver.js                         \
+        src/Api.js                                          \
+        src/ChannelDefinition.js                            \
+        src/ConsecutiveDistinctPredicate.js                 \
+        src/Constants.js                                    \
+        src/DistinctPredicate.js                            \
+        src/LocalBus.js                                     \
+        src/postal.js                                       \
+        src/SubscriptionDefinition.js
+    $(ANVIL)
 
 clean:
-	-@rm -f lib/postal.js lib/postal.min.js
+    -@rm -f lib/postal.js lib/postal.min.js
