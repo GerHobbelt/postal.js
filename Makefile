@@ -5,7 +5,7 @@ ANVIL=node_modules/.bin/anvil
 #ANVIL=anvil
 
 
-.PHONY: all
+.PHONY: all clean
 
 all: lib/postal.js lib/postal.min.js
 
@@ -23,3 +23,6 @@ lib/postal.js lib/postal.min.js:							\
 		src/postal.js										\
 		src/SubscriptionDefinition.js
 	$(ANVIL)
+
+clean:
+	-@rm -f lib/postal.js lib/postal.min.js
