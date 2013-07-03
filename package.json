@@ -65,7 +65,10 @@
         "underscore" : ">=1.1.7"
     },
     "bundleDependencies" : [ "underscore" ],
-    "devDependencies" : {},
+    "devDependencies" : {
+        "anvil.js" : ">= 0.9.4",
+        "anvil.uglify" : ">= 0.1.2"
+    },
     "licenses" : [
         {
             "type" : "MIT",
