@@ -1,3 +1,5 @@
+/* global postal */
+/*jshint -W117 */
 var SubscriptionDefinition = function ( channel, topic, callback ) {
     this.channel = channel;
     this.topic = topic;
@@ -5,12 +7,12 @@ var SubscriptionDefinition = function ( channel, topic, callback ) {
     this.constraints = [];
     this.context = null;
     postal.configuration.bus.publish( {
-        channel : SYSTEM_CHANNEL,
-        topic : "subscription.created",
-        data : {
-            event : "subscription.created",
+		channel : postal.configuration.SYSTEM_CHANNEL,
+		topic   : "subscription.created",
+		data    : {
+			event   : "subscription.created",
             channel : channel,
-            topic : topic
+			topic   : topic
         }
     } );
     postal.configuration.bus.subscribe( this );
@@ -18,24 +20,27 @@ var SubscriptionDefinition = function ( channel, topic, callback ) {
 
 SubscriptionDefinition.prototype = {
     unsubscribe : function () {
-        this.inactive = true;
-        postal.configuration.bus.unsubscribe( this );
-        postal.configuration.bus.publish( {
-            channel : SYSTEM_CHANNEL,
-            topic : "subscription.removed",
-            data : {
-                event : "subscription.removed",
-                channel : this.channel,
-                topic : this.topic
-            }
-        } );
+		if ( !this.inactive ) {
+			this.inactive = true;
+			postal.configuration.bus.unsubscribe( this );
+			postal.configuration.bus.publish( {
+				channel : postal.configuration.SYSTEM_CHANNEL,
+				topic   : "subscription.removed",
+				data    : {
+					event   : "subscription.removed",
+					channel : this.channel,
+					topic   : this.topic
+				}
+			} );
+		}
     },
 
     defer : function () {
+		var self = this;
         var fn = this.callback;
-        this.callback = function ( data ) {
+		this.callback = function ( data, env ) {
             setTimeout( function () {
-                fn( data );
+				fn.call( self.context, data, env );
             }, 0 );
         };
         return this;
@@ -45,13 +50,14 @@ SubscriptionDefinition.prototype = {
         if ( _.isNaN( maxCalls ) || maxCalls <= 0 ) {
             throw "The value provided to disposeAfter (maxCalls) must be a number greater than zero.";
         }
+		var self = this;
         var fn = this.callback;
         var dispose = _.after( maxCalls, _.bind( function () {
             this.unsubscribe();
         }, this ) );
 
         this.callback = function () {
-            fn.apply( this.context, arguments );
+			fn.apply( self.context, arguments );
             dispose();
         };
         return this;
@@ -95,12 +101,12 @@ SubscriptionDefinition.prototype = {
         return this;
     },
 
-    withDebounce : function ( milliseconds ) {
+	withDebounce : function ( milliseconds, immediate ) {
         if ( _.isNaN( milliseconds ) ) {
             throw "Milliseconds must be a number";
         }
         var fn = this.callback;
-        this.callback = _.debounce( fn, milliseconds );
+		this.callback = _.debounce( fn, milliseconds, !!immediate );
         return this;
     },
 
@@ -108,10 +114,11 @@ SubscriptionDefinition.prototype = {
         if ( _.isNaN( milliseconds ) ) {
             throw "Milliseconds must be a number";
         }
+		var self = this;
         var fn = this.callback;
-        this.callback = function ( data ) {
+		this.callback = function ( data, env ) {
             setTimeout( function () {
-                fn( data );
+				fn.call( self.context, data, env );
             }, milliseconds );
         };
         return this;
