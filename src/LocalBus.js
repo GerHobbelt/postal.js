@@ -1,20 +1,20 @@
 /* global postal */
 var fireSub = function ( subDef, envelope ) {
-	if ( !subDef.inactive && postal.configuration.resolver.compare( subDef.topic, envelope.topic ) ) {
-		if ( _.all( subDef.constraints, function ( constraint ) {
-			return constraint.call( subDef.context, envelope.data, envelope );
-		} ) ) {
-			if ( typeof subDef.callback === "function" ) {
-				subDef.callback.call( subDef.context, envelope.data, envelope );
-			}
-		}
-	}
+    if ( !subDef.inactive && postal.configuration.resolver.compare( subDef.topic, envelope.topic ) ) {
+        if ( _.all( subDef.constraints, function ( constraint ) {
+            return constraint.call( subDef.context, envelope.data, envelope );
+        } ) ) {
+            if ( typeof subDef.callback === "function" ) {
+                subDef.callback.call( subDef.context, envelope.data, envelope );
+            }
+        }
+    }
 };
 
 var pubInProgress = 0;
 var unSubQueue = [];
 var clearUnSubQueue = function () {
-	while ( unSubQueue.length ) {
+    while ( unSubQueue.length ) {
         unSubQueue.shift().unsubscribe();
     }
 };
@@ -47,7 +47,7 @@ var localBus = {
                 }
             } );
         }
-		if ( --pubInProgress === 0 ) {
+        if ( --pubInProgress === 0 ) {
             clearUnSubQueue();
         }
         return envelope;
@@ -67,28 +67,13 @@ var localBus = {
     },
 
     subscribe : function ( subDef ) {
-		var channel = this.subscriptions[subDef.channel], subs, len, idx;
+        var channel = this.subscriptions[subDef.channel], subs;
         if ( !channel ) {
             channel = this.subscriptions[subDef.channel] = {};
         }
         subs = this.subscriptions[subDef.channel][subDef.topic];
         if ( !subs ) {
             subs = this.subscriptions[subDef.channel][subDef.topic] = [];
-        }
-        // make sure each subscription Definition is available in each channel/topic only once:
-        // this allows users to invoke .subscribe() with the same definition instance multiple
-        // times in order to adjust execution order.
-        for (idx = 0, len = subs.length; idx < len; ++idx) {
-            if (subs[idx] === subDef) {
-                // do NOT change the execution order while we are in the middle of a .publish() action!
-                if (pubInProgress) {
-                    subQueue.push(subDef);
-                    return subDef;
-                } else {
-                    subs.splice(idx, 1);
-                    break;
-                }
-            }
         }
         subs.push( subDef );
         return subDef;
@@ -99,14 +84,14 @@ var localBus = {
     wireTaps : [],
 
     unsubscribe : function ( config ) {
-		if ( pubInProgress ) {
-			unSubQueue.push( config );
+        if ( pubInProgress ) {
+            unSubQueue.push( config );
             return;
         }
         if ( this.subscriptions[config.channel][config.topic] ) {
             var len = this.subscriptions[config.channel][config.topic].length,
                 idx = 0;
-			while ( idx < len ) {
+            while ( idx < len ) {
                 if ( this.subscriptions[config.channel][config.topic][idx] === config ) {
                     this.subscriptions[config.channel][config.topic].splice( idx, 1 );
                     break;
