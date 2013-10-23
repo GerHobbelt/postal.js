@@ -17,12 +17,15 @@ lib/postal.js lib/postal.min.js:                            \
 		src/Api.js                                          \
 		src/ChannelDefinition.js                            \
 		src/ConsecutiveDistinctPredicate.js                 \
-		src/Constants.js                                    \
 		src/DistinctPredicate.js                            \
 		src/LocalBus.js                                     \
 		src/postal.js                                       \
-		src/SubscriptionDefinition.js
+		src/SubscriptionDefinition.js 						\
+		$(ANVIL)	
 	$(ANVIL)
 
+$(ANVIL):
+	npm install
+	
 clean:
 	-@rm -f lib/postal.js lib/postal.min.js
