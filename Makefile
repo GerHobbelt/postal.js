@@ -7,7 +7,7 @@ ANVIL=node_modules/.bin/anvil
 
 .PHONY: all clean
 
-all: lib/postal.js lib/postal.min.js
+all: lib/postal.js lib/postal.min.js examples
 
 
 lib/postal.js lib/postal.min.js:                            \
@@ -23,6 +23,15 @@ lib/postal.js lib/postal.min.js:                            \
 		src/SubscriptionDefinition.js 						\
 		$(ANVIL)	
 	$(ANVIL)
+
+examples: 													\
+		example/standard/js/postal.js 						\
+		example/amd/js/libs/postal/postal.js	
+
+example/standard/js/postal.js 								\
+example/amd/js/libs/postal/postal.js						\
+		: lib/postal.js			
+	cp $< $@
 
 $(ANVIL):
 	npm install
