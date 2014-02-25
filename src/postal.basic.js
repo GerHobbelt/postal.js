@@ -5,7 +5,7 @@
 		module.exports = factory( require( "underscore" ), this );
 	} else if ( typeof define === "function" && define.amd ) {
 		// AMD. Register as an anonymous module.
-        define("postal", ["underscore"], function ( _ ) {
+		define( ["underscore"], function ( _ ) {
 			return factory( _, root );
 		} );
 	} else {
@@ -17,13 +17,10 @@
 	var _postal;
     var prevPostal = global.postal;
 
-    //import("conduit.js");
-    //import("ChannelDefinition.js");
-    //import("SubscriptionDefinition.js");
-    //import("strategies.js");
+	//import("ChannelDefinition.js");
+	//import("SubscriptionDefinition.js");
 	//import("AmqpBindingsResolver.js");
 	//import("Api.js");
-    //import("linkChannels.js");
 
 	/*jshint -W106 */
 	if ( global && Object.prototype.hasOwnProperty.call( global, "__postalReady__" ) && _.isArray( global.__postalReady__ ) ) {

@@ -1,6 +1,7 @@
 # Postal.js
 
-## Version 0.8.11    (Dual Licensed [MIT](http://www.opensource.org/licenses/mit-license) & [GPL](http://www.opensource.org/licenses/gpl-license))
+## Version 0.9.0-rc1	 (Dual Licensed [MIT](http://www.opensource.org/licenses/mit-license) & [GPL](http://www.opensource.org/licenses/gpl-license))
+*(Note: this is the first release candidate for v0.9.0)*
 
 ## What is it?
 
@@ -132,7 +133,7 @@ dupSubscription.unsubscribe();
 
 ## More References
 
-Please visit the [postal.js wiki](https://github.com/postaljs/postal.js/wiki) for API documentation, discussion of concepts and links to blogs/articles on postal.js.
+Please visit the [postal.js wiki](https://github.com/postaljs/postal.js/wiki) for API documentation, discussion of concepts and links to blogs/articles on postal.js. Just bear in mind that the wiki won't be updated for v0.9.0 until a release is final.
 
 
 ## How can I extend it?
@@ -141,26 +142,24 @@ There are four main ways you can extend Postal:
 
 * Write a plugin.  Need more complex behavior that the built-in SubscriptionDefinition doesn't offer?  Write a plugin that you can attach to the global postal object.  See [postal.when](https://github.com/postaljs/postal.when) for an example of how to do this.
 * Write a custom federation plugin, to federate instances of postal across a transport of your choice.
-* You can write an entirely new bus implementation if you wanted.  The postal `subscribe`, `publish` and `addWiretap` calls all simply wrap a concrete implementation provided by the `postal.configuration.bus` object.  For example, if you wanted a bus that stored message history in local storage and pushed a dump of past messages to a new subscriber, you'd simply write your implementation and then swap the default one out by calling: `postal.configuration.bus = myWayBetterBusImplementation`.
 * You can also change how the `bindingResolver` matches subscriptions to message topics being published.  You may not care for the AMQP-style bindings functionality.  No problem!  Write your own resolver object that implements a `compare` and `reset` method and swap the core version out with your implementation by calling: `postal.configuration.resolver = myWayBetterResolver`.
+* (You can write an entirely new bus implementation if you wanted.  The postal `subscribe`, `publish` and `addWiretap` calls all simply wrap a concrete implementation provided by the `postal.configuration.bus` object.  For example, if you wanted a bus that stored message history in local storage and pushed a dump of past messages to a new subscriber, you'd simply write your implementation and then swap the default one out by calling: `postal.configuration.bus = myWayBetterBusImplementation`.)
 
 It's also possible to extend the monitoring of messages passing through Postal by adding a "wire tap".  A wire tap is a callback that will get invoked for any published message (even if no actual subscriptions would bind to the message's topic).  Wire taps should _not_ be used in lieu of an actual subscription - but instead should be used for diagnostics, logging, forwarding (to a websocket publisher or a local storage wrapper, for example) or other concerns that fall along those lines.  This repository used to include a console logging wiretap called postal.diagnostics.js - you can now find it [here in it's own repo](https://github.com/postaljs/postal.diagnostics).  This diagnostics wiretap can be configured with filters to limit the firehose of message data to specific channels/topics and more.
 
 
-## Build, Tests & Examples
+## Build, Dependencies, etc.
 
-postal.js uses [anvil.js](http://github.com/anviljs/anvil.js/) to build.
-
-* Install node.js (and consider using [nvm](https://github.com/creationix/nvm) to manage your node versions)
-* Run `npm install -g anvil.js` to install anvil.js
-* Navigate to the root of this repository and run `anvil`.  Optionally run `anvil --ci --host --browser`.  This will open your browser to the root index.html of the repository, and run anvil in continuous integration mode (changes to source and tests will causes tests to be refreshed automatically, etc).
-* Build output will be placed in the lib folder.
-
-To run tests or examples:
-
-* For tests, navigate to `http://localhost:3080/spec`
-* For the "standard" example, navigate to `http://localhost:3080/standard`
-* For the "AMD" example, navigate to `http://localhost:3080/amd`
+* postal depends on [underscore.js](http://underscorejs.org/)
+* postal uses [gulp.js](http://gulpjs.com/) for building, running tests and examples.
+	* To build
+        * run `npm install` (to install all deps)
+        * run `npm run build` - then check the lib folder for the output
+    * To run tests & examples
+        * To run node-based tests: `npm run test`
+        * To run browser-based tests & examples:
+            * run `npm start`
+            * navigate in your browser to <http://localhost:3080/>
 
 
 ## Can I contribute?
@@ -174,5 +173,6 @@ Here's where Postal is headed:
 
 * Add-ons to enable message capture and replay are in the works and should be ready soon.
 * The `SubscriptionDefinition` object will be given the ability to pause (skip) responding to subscriptions
-* We'll be working on experimental "lightweight" builds of postal, providing a basic SubscriptionDefinition prototype, but removing the more advanced options if you don't need them. Reduced size builds would be offered alongside full builds, giving you page-weight-sensitive options.
+* We'll be working on experimental "underscore-free" builds of postal, providing ES5 method shims so that you don't have to pull in underscore/lodash just to run postal.
 * What else would you like to see?
+

@@ -14,7 +14,10 @@ desktop.ini
 
 *node_modules
 *npm-debug*
+report/
+bower/
 
 # editor backup files
 *.bak
 *~
+
