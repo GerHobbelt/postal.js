@@ -93,7 +93,8 @@
         "express": "~3.4.7",
         "gulp-rimraf": "0.0.8",
         "open": "~0.0.4",
-        "expect.js": "~0.2.0"
+        "expect.js": "~0.2.0",
+        "mocha": ">=1.18.2"
     },
     "licenses": [
         {
